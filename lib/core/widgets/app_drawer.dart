@@ -176,6 +176,7 @@ class _AppDrawerState
                   EdgeInsets.zero,
               children: [
 
+                // HOME
                 ListTile(
                   leading:
                       const Icon(
@@ -211,6 +212,7 @@ class _AppDrawerState
                   },
                 ),
 
+                // COUNTER
                 ListTile(
                   leading:
                       const Icon(
@@ -246,6 +248,7 @@ class _AppDrawerState
                   },
                 ),
 
+                // POSTS
                 ListTile(
                   leading:
                       const Icon(
@@ -281,8 +284,80 @@ class _AppDrawerState
                   },
                 ),
 
+                // CATEGORY
+                ListTile(
+                  leading:
+                      const Icon(
+                    Icons.category_rounded,
+                    color:
+                        Colors.teal,
+                  ),
+
+                  title:
+                      const Text(
+                    "Category",
+                  ),
+
+                  trailing:
+                      const Icon(
+                    Icons
+                        .arrow_forward_ios,
+                    size: 16,
+                  ),
+
+                  onTap: () {
+
+                    Navigator.pop(
+                      context,
+                    );
+
+                    Navigator
+                        .pushNamed(
+                      context,
+                      '/category',
+                    );
+                  },
+                ),
+
+                // PRODUCT
+                ListTile(
+                  leading:
+                      const Icon(
+                    Icons
+                        .shopping_bag_rounded,
+                    color:
+                        Colors.indigo,
+                  ),
+
+                  title:
+                      const Text(
+                    "Product",
+                  ),
+
+                  trailing:
+                      const Icon(
+                    Icons
+                        .arrow_forward_ios,
+                    size: 16,
+                  ),
+
+                  onTap: () {
+
+                    Navigator.pop(
+                      context,
+                    );
+
+                    Navigator
+                        .pushNamed(
+                      context,
+                      '/product',
+                    );
+                  },
+                ),
+
                 const Divider(),
 
+                // PROFILE
                 ListTile(
                   leading:
                       const Icon(
@@ -317,6 +392,7 @@ class _AppDrawerState
                   },
                 ),
 
+                // LOGOUT
                 ListTile(
                   leading:
                       const Icon(

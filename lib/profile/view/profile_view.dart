@@ -6,473 +6,187 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:bloc_cubit/login/bloc/login_bloc.dart';
-import 'package:bloc_cubit/profile/repository/profile_repository.dart';
 
 class ProfileView extends StatefulWidget {
-  const ProfileView({
-    super.key,
-  });
+  const ProfileView({super.key});
 
   @override
-  State<ProfileView> createState() =>
-      _ProfileViewState();
+  State<ProfileView> createState() => _ProfileViewState();
 }
 
-class _ProfileViewState
-    extends State<ProfileView> {
-
+class _ProfileViewState extends State<ProfileView> {
   File? profileImage;
-
-  late TextEditingController
-      usernameController;
-
-  late TextEditingController
-      emailController;
 
   @override
   void initState() {
     super.initState();
-
     loadProfileImage();
-
-    final loginState =
-        context.read<LoginBloc>().state;
-
-    if (loginState
-        is LoginSuccess) {
-
-      usernameController =
-          TextEditingController(
-        text: loginState
-            .login
-            .user
-            .username,
-      );
-
-      emailController =
-          TextEditingController(
-        text: loginState
-            .login
-            .user
-            .email,
-      );
-    } else {
-
-      usernameController =
-          TextEditingController();
-
-      emailController =
-          TextEditingController();
-    }
   }
 
-  // PICK IMAGE
   Future<void> pickImage() async {
-
-    final picker =
-        ImagePicker();
-
-    final image =
-        await picker.pickImage(
-      source:
-          ImageSource.gallery,
+    final picker = ImagePicker();
+    final image = await picker.pickImage(
+      source: ImageSource.gallery,
       imageQuality: 80,
     );
 
     if (image == null) return;
 
-    final prefs =
-        await SharedPreferences
-            .getInstance();
-
-    await prefs.setString(
-      'profile_image',
-      image.path,
-    );
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('profile_image', image.path);
 
     setState(() {
-
-      profileImage =
-          File(image.path);
+      profileImage = File(image.path);
     });
   }
 
-  // LOAD IMAGE
-  Future<void>
-      loadProfileImage() async {
-
-    final prefs =
-        await SharedPreferences
-            .getInstance();
-
-    final path =
-        prefs.getString(
-      'profile_image',
-    );
-
+  Future<void> loadProfileImage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final path = prefs.getString('profile_image');
     if (path != null) {
-
       setState(() {
-
-        profileImage =
-            File(path);
+        profileImage = File(path);
       });
     }
   }
 
   @override
-  void dispose() {
-    usernameController.dispose();
-    emailController.dispose();
-    super.dispose();
-  }
+  Widget build(BuildContext context) {
+    return BlocBuilder<LoginBloc, LoginState>(
+      builder: (context, loginState) {
+        String username = "Guest";
+        String email = "";
 
-  @override
-  Widget build(
-    BuildContext context,
-  ) {
+        if (loginState is LoginSuccess) {
+          username = loginState.login.user.username;
+          email = loginState.login.user.email;
+        }
 
-    final loginState =
-        context
-            .read<LoginBloc>()
-            .state;
-
-    String username =
-        "Guest";
-
-    String email = "";
-
-    if (loginState
-        is LoginSuccess) {
-
-      username =
-          loginState
-              .login
-              .user
-              .username;
-
-      email =
-          loginState
-              .login
-              .user
-              .email;
-    }
-
-    return Scaffold(
-
-      appBar: AppBar(
-        title:
-            const Text(
-          'Profile Page',
-        ),
-      ),
-
-      body:
-          SingleChildScrollView(
-
-        padding:
-            const EdgeInsets.all(
-          20,
-        ),
-
-        child: Column(
-          children: [
-
-            const SizedBox(
-              height: 20,
-            ),
-
-            // PROFILE IMAGE
-            GestureDetector(
-
-              onTap:
-                  pickImage,
-
-              child: Stack(
-
-                alignment:
-                    Alignment
-                        .bottomRight,
-
-                children: [
-
-                  CircleAvatar(
-                    radius: 60,
-
-                    backgroundColor:
-                        const Color.fromARGB(255, 255, 255, 255),
-
-                    backgroundImage:
-                        profileImage !=
-                                null
-                            ? FileImage(
-                                profileImage!,
-                              )
-                            : null,
-
-                    child:
-                        profileImage ==
-                                null
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Profile Page'),
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: pickImage,
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      CircleAvatar(
+                        radius: 60,
+                        backgroundColor: Colors.blue,
+                        backgroundImage:
+                            profileImage != null ? FileImage(profileImage!) : null,
+                        child: profileImage == null
                             ? Text(
-                                username
-                                        .isNotEmpty
-                                    ? username[
-                                            0]
-                                        .toUpperCase()
+                                username.isNotEmpty
+                                    ? username[0].toUpperCase()
                                     : "U",
-
-                                style:
-                                    const TextStyle(
-                                  color:
-                                      Colors.white,
-                                  fontSize:
-                                      40,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               )
                             : null,
-                  ),
-
-                  Container(
-                    padding:
-                        const EdgeInsets.all(
-                      8,
-                    ),
-
-                    decoration:
-                        const BoxDecoration(
-                      color:
-                          Colors.blue,
-                      shape:
-                          BoxShape.circle,
-                    ),
-
-                    child:
-                        const Icon(
-                      Icons
-                          .camera_alt,
-                      color:
-                          Colors.white,
-                      size:
-                          18,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(
-              height: 20,
-            ),
-
-            Text(
-              username,
-              style:
-                  const TextStyle(
-                fontSize: 26,
-                fontWeight:
-                    FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(
-              height: 8,
-            ),
-
-            Text(
-              email,
-              style:
-                  const TextStyle(
-                color:
-                    Colors.grey,
-                fontSize: 16,
-              ),
-            ),
-
-            const SizedBox(
-              height: 30,
-            ),
-
-            // USERNAME
-            TextField(
-              controller:
-                  usernameController,
-
-              decoration:
-                  InputDecoration(
-                labelText:
-                    "Username",
-
-                border:
-                    OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(
-                    16,
-                  ),
-                ),
-
-                prefixIcon:
-                    const Icon(
-                  Icons.person,
-                ),
-              ),
-            ),
-
-            const SizedBox(
-              height: 20,
-            ),
-
-            // EMAIL
-            TextField(
-              controller:
-                  emailController,
-
-              decoration:
-                  InputDecoration(
-                labelText:
-                    "Email",
-
-                border:
-                    OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(
-                    16,
-                  ),
-                ),
-
-                prefixIcon:
-                    const Icon(
-                  Icons.email,
-                ),
-              ),
-            ),
-
-            const SizedBox(
-              height: 30,
-            ),
-
-            // UPDATE BUTTON
-            SizedBox(
-              width:
-                  double.infinity,
-              height: 60,
-
-              child:
-                  ElevatedButton
-                      .icon(
-
-                style:
-                    ElevatedButton
-                        .styleFrom(
-                  shape:
-                      RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(
-                      30,
-                    ),
-                  ),
-                ),
-
-                onPressed:
-                    () async {
-
-                  try {
-
-                    final loginState =
-                        context
-                                .read<
-                                    LoginBloc>()
-                                .state
-                            as LoginSuccess;
-
-                    final token =
-                        loginState
-                            .login
-                            .jwt;
-
-                    // UPDATE API
-                    final updatedUser =
-                        await context
-                            .read<
-                                ProfileRepository>()
-                            .updateProfile(
-
-                      token:
-                          token,
-
-                      username:
-                          usernameController
-                              .text
-                              .trim(),
-
-                      email:
-                          emailController
-                              .text
-                              .trim(),
-                    );
-
-                    // UPDATE LOGIN BLOC
-                    context
-                        .read<
-                            LoginBloc>()
-                        .add(
-                          UpdateUserProfile(
-                            user:
-                                updatedUser,
-                          ),
-                        );
-
-                    if (!mounted)
-                      return;
-
-                    ScaffoldMessenger
-                            .of(
-                                context)
-                        .showSnackBar(
-
-                      const SnackBar(
-                        content:
-                            Text(
-                          'Profile berhasil diperbarui',
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: const BoxDecoration(
+                          color: Colors.blue,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt,
+                          color: Colors.white,
+                          size: 18,
                         ),
                       ),
-                    );
-
-                    setState(
-                        () {});
-                  } catch (e) {
-
-                    if (!mounted)
-                      return;
-
-                    ScaffoldMessenger
-                            .of(
-                                context)
-                        .showSnackBar(
-                      SnackBar(
-                        content:
-                            Text(
-                          e.toString(),
-                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(username,
+                    style:
+                        const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Text(email,
+                    style: const TextStyle(color: Colors.grey, fontSize: 16)),
+                const SizedBox(height: 40),
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                    );
-                  }
-                },
-
-                icon:
-                    const Icon(
-                  Icons.save,
+                    ),
+                    onPressed: () async {
+                      await Navigator.pushNamed(context, '/update-profile');
+                    },
+                    icon: const Icon(Icons.edit),
+                    label: const Text("Update Profile"),
+                  ),
                 ),
-
-                label:
-                    const Text(
-                  "Update Profile",
-                ),
-              ),
+                const SizedBox(height: 24),
+                buildDangerZone(context),
+              ],
             ),
-          ],
-        ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget buildDangerZone(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.red.shade200),
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.red.shade50,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Danger Zone",
+            style: TextStyle(
+              color: Colors.red.shade700,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "These actions may affect your account permanently.",
+            style: TextStyle(
+              color: Colors.grey.shade700,
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.red,
+                side: const BorderSide(color: Colors.red),
+              ),
+              icon: const Icon(Icons.delete_forever),
+              label: const Text("Delete Account"),
+              onPressed: () {
+                Navigator.pushNamed(context, '/delete-account');
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
