@@ -123,7 +123,7 @@ class _AppDrawerState
 
                 accountName:
                     const Text(
-                  "Bloc Cubit",
+                  "UAS Firman",
                   style:
                       TextStyle(
                     fontWeight:

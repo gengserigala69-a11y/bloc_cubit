@@ -252,7 +252,7 @@ class _HomeViewState
 
                                 const Text(
 
-                                  "Welcome Back 👋",
+                                  "Welcome Back",
 
                                   style:
                                       TextStyle(
