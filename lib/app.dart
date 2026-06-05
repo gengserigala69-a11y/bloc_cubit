@@ -44,6 +44,10 @@ import 'package:bloc_cubit/category/view/add_category_page.dart';
 import 'package:bloc_cubit/category/view/edit_category_page.dart';
 
 
+import 'package:bloc_cubit/product/view/product_view.dart';
+import 'package:bloc_cubit/product/view/add_product_page.dart';
+import 'package:bloc_cubit/product/view/edit_product_page.dart';
+
 
 class CounterApp extends StatelessWidget {
   const CounterApp({super.key});
@@ -154,6 +158,10 @@ class CounterApp extends StatelessWidget {
                 '/category': (_) => const CategoryView(),
                 '/add-category': (_) => const AddCategoryPage(),
                 '/edit-category': (_) => const EditCategoryPage(),
+
+                '/product': (_) => const ProductView(),
+'/add-product': (_) => const AddProductPage(),
+'/edit-product': (_) => const EditProductPage(),
 
 
               },
